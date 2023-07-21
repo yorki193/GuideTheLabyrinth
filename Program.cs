@@ -1,102 +1,100 @@
-﻿using static System.Net.Mime.MediaTypeNames;
+﻿using GuideTheLabyrinth;
+using static System.Net.Mime.MediaTypeNames;
 
 List<int[]> ExiteTheLabyrinth(int[] start, int[] end)
 {
     List<int[]> path = new List<int[]>();
-    int[] step = new int[] { 0, 0 };
-    int[] prevStep = new int[] { 0, 0 };
-
+    Move currentStep = new Move(start, "up");
+    
     path.Add(start);
 
-    while(path.LastOrDefault()[0] != end[0] && path.LastOrDefault()[1] != end[1])
+    while(currentStep.Position[0] != end[0] && currentStep.Position[1] != end[1])
     {
-        prevStep = step;
-        step = path.LastOrDefault();
+        currentStep = NextMove(currentStep);
         
-        path.Add(Step(step, prevStep));
-    }
-
-    path.Add(end);
+        path.Add(currentStep.Position);
+    }   
 
     Console.WriteLine("Ready");
     return path;
 }
 
-int[] Step(int[] step, int[] prevStep)
-{ 
-    int y = step[0];
-    int x = step[1];
-    int[] coords = new int[] { 0, 0 };
+Move NextMove(Move currentStep)
+{
+    string[] directions = new string[] { "left", "down", "right", "up"};
     
-    //перевірка напрямків
-    //left
-    if (Labyrinth(y, x-1) == 1) //left
+    Move tryToGo = currentStep;
+
+    while(tryToGo.Position == currentStep.Position) // !!! don't shut down even when condition done remember function work
     {
-        coords = new int[] { y, x - 1 };
+        tryToGo.Direction = Array.IndexOf(directions, tryToGo.Direction) == 3 ? directions[0] : directions[Array.IndexOf(directions, tryToGo.Direction) + 1];
 
-        if (coords[0] != prevStep[0] && coords[1] != prevStep[1])
-        {
-            return coords;
-        }
-    }    
-
-    //down
-    if (Labyrinth(y+1, x) == 1) 
-    {
-        coords = new int[] { y + 1, x };
-
-        if (coords[0] != prevStep[0] && coords[1] != prevStep[1])
-        {
-            return coords;
-        }
+        tryToGo.Position = DirectionCheck(tryToGo); //new position isn't correct: insted of 1, 1 it became 1, 0
     }
 
-    //right
-    if (Labyrinth(y, x+1) == 1) 
-    {
-        coords = new int[] { y, x + 1 };
-
-        if (coords[0] != prevStep[0] && coords[1] != prevStep[1])
-        {
-            return coords;
-        }
-    }
-
-    //up
-    if (Labyrinth(y-1, x) == 1) 
-    {
-        coords = new int[] { y - 1, x };
-
-        if (coords[0] != prevStep[0] && coords[1] != prevStep[1])
-        {
-            return coords;
-        }
-    }
-
-    return coords;
+    return tryToGo;
 }
+
+int[] DirectionCheck(Move currentStep)
+{
+    int[] newCoords = new int[] { 0, 0 };
+        
+    newCoords[0] = currentStep.Position[0];
+    newCoords[1] = currentStep.Position[1];
+
+    switch (currentStep.Direction)
+    {
+        case "left":        
+            newCoords[1] = newCoords[1] + 1; 
+            break;
+
+        case "down":
+        default:
+            newCoords[0] = newCoords[0] + 1;
+            break;
+
+        case "right":
+            newCoords[1] = newCoords[1] - 1;
+            break;
+
+        case "up":
+            newCoords[0] = newCoords[0] - 1;
+            break;
+    }
+
+    if (Labyrinth(newCoords[0], newCoords[1]) == 1)
+    {
+        return newCoords;
+    }
+
+    return currentStep.Position;
+}
+
+
 
 int Labyrinth(int y, int x)
 {
-    int[,] labyrinth = {
-    { 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 },
-    { 0, 1, 1, 1, 0, 0, 1, 1, 1, 0 },
-    { 0, 1, 0, 1, 0, 1, 1, 1, 1, 0 },
-    { 0, 1, 1, 1, 0, 1, 0, 1, 1, 0 },
-    { 1, 1, 0, 0, 0, 1, 0, 1, 0, 0 },
-    { 0, 1, 0, 1, 1, 1, 1, 1, 1, 0 },
-    { 0, 1, 1, 1, 0, 0, 0, 0, 1, 0 },
-    { 0, 1, 0, 1, 1, 0, 1, 1, 1, 0 },
-    { 1, 1, 1, 1, 1, 0, 1, 1, 0, 0 },
-    { 0, 0, 1, 0, 1, 0, 0, 1, 0, 0 } };
-
     //int[,] labyrinth =
     //{
-    //    {0, 1, 0, 0},
-    //    {1, 1, 1, 1},
-    //    {0, 1, 1, 0},
-    //    {0, 0, 1, 0}
+    //{ 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 },
+    //{ 0, 1, 1, 1, 0, 0, 1, 1, 1, 0 },
+    //{ 0, 1, 0, 1, 0, 1, 1, 1, 1, 0 },
+    //{ 0, 1, 1, 1, 0, 1, 0, 1, 1, 0 },
+    //{ 1, 1, 0, 0, 0, 1, 0, 1, 0, 0 },
+    //{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 0 },
+    //{ 0, 1, 1, 1, 0, 0, 0, 0, 1, 0 },
+    //{ 0, 1, 0, 1, 1, 0, 1, 1, 1, 0 },
+    //{ 1, 1, 1, 1, 1, 0, 1, 1, 0, 0 },
+    //{ 0, 0, 1, 0, 1, 0, 0, 1, 0, 0 }
     //};
+
+    int[,] labyrinth =
+    {
+        {0, 1, 0, 0},
+        {1, 1, 1, 1},
+        {0, 1, 1, 0},
+        {0, 0, 1, 0}
+    };
 
     try
     {
@@ -117,8 +115,8 @@ int Labyrinth(int y, int x)
 }
 
 int[] start = new int[] { 0, 1 };
-int[] exite = new int[] { 9, 7 };
-//int[] exite = new int[] { 3, 2 };
+//int[] exite = new int[] { 9, 7 };
+int[] exite = new int[] { 3, 2 };
 List<int[]> result = ExiteTheLabyrinth(start, exite);
 
 File.WriteAllText(@"C:\Projects\C#\GuideTheLabyrinth\result.txt", string.Join(";", result.Select(x => string.Join(",", x))));
@@ -137,3 +135,6 @@ File.WriteAllText(@"C:\Projects\C#\GuideTheLabyrinth\result.txt", string.Join(";
 
 //варіанти - вибір однієї сторони
 //паралельний прохід по коридорах - рекурсія
+
+//варіант лівої руки:
+//метод, що приймає значення (напрям) попереднього кроку і повертає набір рухів так, щоб він починався вліво від нього
