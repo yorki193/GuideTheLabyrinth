@@ -4,16 +4,16 @@ using static System.Net.Mime.MediaTypeNames;
 List<int[]> ExiteTheLabyrinth(int[] start, int[] end)
 {
     List<int[]> path = new List<int[]>();
-    Move currentStep = new Move(start, "up");
+    Move currentStep = new Move(start, "down");
     
     path.Add(start);
 
-    while(currentStep.Position[0] != end[0] && currentStep.Position[1] != end[1])
+    while(!(currentStep.Position[0] == end[0] && currentStep.Position[1] == end[1]))
     {
         currentStep = NextMove(currentStep);
         
         path.Add(currentStep.Position);
-    }   
+    }
 
     Console.WriteLine("Ready");
     return path;
@@ -23,13 +23,17 @@ Move NextMove(Move currentStep)
 {
     string[] directions = new string[] { "left", "down", "right", "up"};
     
-    Move tryToGo = currentStep;
+    Move tryToGo = new Move(currentStep.Position, currentStep.Direction);
 
-    while(tryToGo.Position == currentStep.Position) // !!! don't shut down even when condition done remember function work
+    tryToGo.Direction = Array.IndexOf(directions, tryToGo.Direction) == 0 ? directions[3] : directions[Array.IndexOf(directions, tryToGo.Direction) - 1];
+
+    tryToGo.Position = DirectionCheck(tryToGo);
+
+    while (tryToGo.Position[0] == currentStep.Position[0] && tryToGo.Position[1] == currentStep.Position[1])
     {
         tryToGo.Direction = Array.IndexOf(directions, tryToGo.Direction) == 3 ? directions[0] : directions[Array.IndexOf(directions, tryToGo.Direction) + 1];
 
-        tryToGo.Position = DirectionCheck(tryToGo); //new position isn't correct: insted of 1, 1 it became 1, 0
+        tryToGo.Position = DirectionCheck(tryToGo);
     }
 
     return tryToGo;
@@ -44,7 +48,7 @@ int[] DirectionCheck(Move currentStep)
 
     switch (currentStep.Direction)
     {
-        case "left":        
+        case "left":
             newCoords[1] = newCoords[1] + 1; 
             break;
 
@@ -74,27 +78,27 @@ int[] DirectionCheck(Move currentStep)
 
 int Labyrinth(int y, int x)
 {
-    //int[,] labyrinth =
-    //{
-    //{ 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 },
-    //{ 0, 1, 1, 1, 0, 0, 1, 1, 1, 0 },
-    //{ 0, 1, 0, 1, 0, 1, 1, 1, 1, 0 },
-    //{ 0, 1, 1, 1, 0, 1, 0, 1, 1, 0 },
-    //{ 1, 1, 0, 0, 0, 1, 0, 1, 0, 0 },
-    //{ 0, 1, 0, 1, 1, 1, 1, 1, 1, 0 },
-    //{ 0, 1, 1, 1, 0, 0, 0, 0, 1, 0 },
-    //{ 0, 1, 0, 1, 1, 0, 1, 1, 1, 0 },
-    //{ 1, 1, 1, 1, 1, 0, 1, 1, 0, 0 },
-    //{ 0, 0, 1, 0, 1, 0, 0, 1, 0, 0 }
-    //};
-
     int[,] labyrinth =
     {
-        {0, 1, 0, 0},
-        {1, 1, 1, 1},
-        {0, 1, 1, 0},
-        {0, 0, 1, 0}
+    { 0, 1, 0, 1, 0, 0, 0, 1, 0, 0 },
+    { 0, 1, 1, 1, 0, 0, 1, 1, 1, 0 },
+    { 0, 1, 0, 1, 0, 1, 1, 1, 1, 0 },
+    { 0, 1, 1, 1, 0, 1, 0, 1, 1, 0 },
+    { 1, 1, 0, 0, 0, 1, 0, 1, 0, 0 },
+    { 0, 1, 0, 1, 1, 1, 1, 1, 1, 0 },
+    { 0, 1, 1, 1, 0, 0, 0, 0, 1, 0 },
+    { 0, 1, 0, 1, 1, 0, 1, 1, 1, 0 },
+    { 1, 1, 1, 1, 1, 0, 1, 1, 0, 0 },
+    { 0, 0, 1, 0, 1, 0, 0, 1, 0, 0 }
     };
+
+    //int[,] labyrinth =
+    //{
+    //    {0, 1, 0, 0},
+    //    {1, 1, 1, 1},
+    //    {0, 1, 1, 0},
+    //    {0, 0, 1, 0}
+    //};
 
     try
     {
@@ -115,26 +119,8 @@ int Labyrinth(int y, int x)
 }
 
 int[] start = new int[] { 0, 1 };
-//int[] exite = new int[] { 9, 7 };
-int[] exite = new int[] { 3, 2 };
+int[] exite = new int[] { 9, 7 };
+//int[] exite = new int[] { 3, 2 };
 List<int[]> result = ExiteTheLabyrinth(start, exite);
 
 File.WriteAllText(@"C:\Projects\C#\GuideTheLabyrinth\result.txt", string.Join(";", result.Select(x => string.Join(",", x))));
-
-
-
-
-
-//--------------------------------------------------------------------------
-//програма для виходу з лабіринту
-//двомірний масив, де буде лабіринт (1 - прохід, 0 - стіни // x/y)
-
-//параметри метода - вхід в лабіринт, вихід з лабіринту
-
-//результат - цепочка координат, що дозволяють вийти з лабіринту.
-
-//варіанти - вибір однієї сторони
-//паралельний прохід по коридорах - рекурсія
-
-//варіант лівої руки:
-//метод, що приймає значення (напрям) попереднього кроку і повертає набір рухів так, щоб він починався вліво від нього

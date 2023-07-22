@@ -14,7 +14,7 @@ namespace GuideTheLabyrinth
         public Move() 
         {
             Position = new int[] { 0, 0 };
-            Direction = "up";
+            Direction = "down";
         }
 
         public Move(int[] position, string direction)
