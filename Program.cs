@@ -1,14 +1,14 @@
 ﻿using GuideTheLabyrinth;
 using static System.Net.Mime.MediaTypeNames;
 
-List<int[]> ExiteTheLabyrinth(int[] start, int[] end)
+List<Point> ExiteTheLabyrinth(Point start, Point end)
 {
-    List<int[]> path = new List<int[]>();
-    Move currentStep = new Move(start, "down");
+    List<Point> path = new List<Point>();
+    Move currentStep = new Move(start, DirectionType.down);
     
     path.Add(start);
 
-    while(!(currentStep.Position[0] == end[0] && currentStep.Position[1] == end[1]))
+    while(!(currentStep.Position == end))
     {
         currentStep = NextMove(currentStep);
         
@@ -20,18 +20,16 @@ List<int[]> ExiteTheLabyrinth(int[] start, int[] end)
 }
 
 Move NextMove(Move currentStep)
-{
-    string[] directions = new string[] { "left", "down", "right", "up"};
-    
+{    
     Move tryToGo = new Move(currentStep.Position, currentStep.Direction);
 
-    tryToGo.Direction = Array.IndexOf(directions, tryToGo.Direction) == 0 ? directions[3] : directions[Array.IndexOf(directions, tryToGo.Direction) - 1];
+    tryToGo.Direction = tryToGo.Direction == DirectionType.left ? DirectionType.up : (DirectionType)(tryToGo.Direction-1);
 
     tryToGo.Position = DirectionCheck(tryToGo);
 
-    while (tryToGo.Position[0] == currentStep.Position[0] && tryToGo.Position[1] == currentStep.Position[1])
-    {
-        tryToGo.Direction = Array.IndexOf(directions, tryToGo.Direction) == 3 ? directions[0] : directions[Array.IndexOf(directions, tryToGo.Direction) + 1];
+    while (tryToGo.Position == currentStep.Position)
+    {        
+        tryToGo.Direction = tryToGo.Direction == DirectionType.up ? DirectionType.left : (DirectionType)(tryToGo.Direction + 1);
 
         tryToGo.Position = DirectionCheck(tryToGo);
     }
@@ -39,34 +37,34 @@ Move NextMove(Move currentStep)
     return tryToGo;
 }
 
-int[] DirectionCheck(Move currentStep)
+Point DirectionCheck(Move currentStep)
 {
-    int[] newCoords = new int[] { 0, 0 };
-        
-    newCoords[0] = currentStep.Position[0];
-    newCoords[1] = currentStep.Position[1];
+    Point newCoords = new Point();
 
+    newCoords.Y = currentStep.Position.Y;
+    newCoords.X = currentStep.Position.X;
+        
     switch (currentStep.Direction)
     {
-        case "left":
-            newCoords[1] = newCoords[1] + 1; 
+        case DirectionType.left:
+            newCoords.X = newCoords.X + 1; 
             break;
 
-        case "down":
+        case DirectionType.down:
         default:
-            newCoords[0] = newCoords[0] + 1;
+            newCoords.Y = newCoords.Y + 1;
             break;
 
-        case "right":
-            newCoords[1] = newCoords[1] - 1;
+        case DirectionType.right:
+            newCoords.X = newCoords.X - 1;
             break;
 
-        case "up":
-            newCoords[0] = newCoords[0] - 1;
+        case DirectionType.up:
+            newCoords.Y = newCoords.Y - 1;
             break;
     }
 
-    if (Labyrinth(newCoords[0], newCoords[1]) == 1)
+    if (Labyrinth(newCoords) == 1)
     {
         return newCoords;
     }
@@ -76,7 +74,7 @@ int[] DirectionCheck(Move currentStep)
 
 
 
-int Labyrinth(int y, int x)
+int Labyrinth(Point p)
 {
     int[,] labyrinth =
     {
@@ -102,7 +100,7 @@ int Labyrinth(int y, int x)
 
     try
     {
-        if (labyrinth[y, x] == 1)
+        if (labyrinth[p.Y, p.X] == 1)
         {
             return 1;
         }
@@ -118,9 +116,9 @@ int Labyrinth(int y, int x)
      
 }
 
-int[] start = new int[] { 0, 1 };
-int[] exite = new int[] { 9, 7 };
-//int[] exite = new int[] { 3, 2 };
-List<int[]> result = ExiteTheLabyrinth(start, exite);
+Point start = new Point(0, 1);
+Point exite = new Point(9, 7);
+//Point exite = new Point(3, 2);
+List<Point> result = ExiteTheLabyrinth(start, exite);
 
-File.WriteAllText(@"C:\Projects\C#\GuideTheLabyrinth\result.txt", string.Join(";", result.Select(x => string.Join(",", x))));
+File.WriteAllText(@"C:\Projects\C#\GuideTheLabyrinth\result.txt", string.Join("; ", result.Select(x => string.Join(",", x.Y, x.X))));

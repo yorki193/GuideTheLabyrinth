@@ -8,16 +8,16 @@ namespace GuideTheLabyrinth
 {
     public class Move
     {
-        public int[] Position { get; set; }
-        public string Direction { get; set; }
+        public Point Position { get; set; }
+        public DirectionType Direction { get; set; }
 
         public Move() 
         {
-            Position = new int[] { 0, 0 };
-            Direction = "down";
+            Position = new Point(0, 0);
+            Direction = DirectionType.down;
         }
 
-        public Move(int[] position, string direction)
+        public Move(Point position, DirectionType direction)
         {
             Position = position;
             Direction = direction;
