@@ -14,7 +14,7 @@ namespace GuideTheLabyrinth
         public Move() 
         {
             Position = new Point(0, 0);
-            Direction = DirectionType.down;
+            Direction = DirectionType.Down;
         }
 
         public Move(Point position, DirectionType direction)

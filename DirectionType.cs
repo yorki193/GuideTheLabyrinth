@@ -8,9 +8,9 @@ namespace GuideTheLabyrinth
 {
     public enum DirectionType
     {
-        left = 0,
-        down = 1,
-        right = 2,
-        up = 3
+        Left = 0,
+        Down = 1,
+        Right = 2,
+        Up = 3
     };
 }

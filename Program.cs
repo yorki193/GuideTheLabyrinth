@@ -4,7 +4,7 @@ using static System.Net.Mime.MediaTypeNames;
 List<Point> ExiteTheLabyrinth(Point start, Point end)
 {
     List<Point> path = new List<Point>();
-    Move currentStep = new Move(start, DirectionType.down);
+    Move currentStep = new Move(start, DirectionType.Down);
     
     path.Add(start);
 
@@ -23,13 +23,13 @@ Move NextMove(Move currentStep)
 {    
     Move tryToGo = new Move(currentStep.Position, currentStep.Direction);
 
-    tryToGo.Direction = tryToGo.Direction == DirectionType.left ? DirectionType.up : (DirectionType)(tryToGo.Direction-1);
+    tryToGo.Direction = tryToGo.Direction == DirectionType.Left ? DirectionType.Up : (DirectionType)(tryToGo.Direction-1);
 
     tryToGo.Position = DirectionCheck(tryToGo);
 
     while (tryToGo.Position == currentStep.Position)
     {        
-        tryToGo.Direction = tryToGo.Direction == DirectionType.up ? DirectionType.left : (DirectionType)(tryToGo.Direction + 1);
+        tryToGo.Direction = tryToGo.Direction == DirectionType.Up ? DirectionType.Left : (DirectionType)(tryToGo.Direction + 1);
 
         tryToGo.Position = DirectionCheck(tryToGo);
     }
@@ -46,20 +46,20 @@ Point DirectionCheck(Move currentStep)
         
     switch (currentStep.Direction)
     {
-        case DirectionType.left:
+        case DirectionType.Left:
             newCoords.X = newCoords.X + 1; 
             break;
 
-        case DirectionType.down:
+        case DirectionType.Down:
         default:
             newCoords.Y = newCoords.Y + 1;
             break;
 
-        case DirectionType.right:
+        case DirectionType.Right:
             newCoords.X = newCoords.X - 1;
             break;
 
-        case DirectionType.up:
+        case DirectionType.Up:
             newCoords.Y = newCoords.Y - 1;
             break;
     }
